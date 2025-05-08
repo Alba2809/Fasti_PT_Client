@@ -1,3 +1,4 @@
+// define the roles and their ids
 export const Roles = {
   gerente: {
     name: "gerente",

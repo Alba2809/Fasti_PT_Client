@@ -3,6 +3,7 @@ import { FaCoins, FaCashRegister } from "react-icons/fa";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { Paths } from "./Paths";
 
+// define the paths of the options for each role
 export const MenuPaths = {
   gerente: [
     {

@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Menu from "../components/Menu";
 
+// this component displays the dashboard with the menu and the main content
 function Dashboard() {
   return (
     <div className="h-screen w-screen flex font-serif">

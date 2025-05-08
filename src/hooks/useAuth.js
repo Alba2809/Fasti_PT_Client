@@ -3,7 +3,9 @@ import { useAuthContext } from "../context/AuthContext";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
+// this hook manages the authentication functionality
 export const useAuth = () => {
+  // use the AuthContext to get the user, isAuthenticated, errors, signin, loading, and logout functions
   const {
     user,
     isAuthenticated,
@@ -17,11 +19,11 @@ export const useAuth = () => {
     register,
     handleSubmit,
     formState: { errors: formErrors },
-  } = useForm();
+  } = useForm(); // use the useForm hook to manage the form state
   
   const formErrorsArray = Object.values(formErrors); // convert the formErrors object to an array
 
-  // handle the form submission
+  // handle the form to sign in the user
   const onSubmit = handleSubmit((data) => {
     if (loading) return;
     signin(data);
@@ -34,6 +36,7 @@ export const useAuth = () => {
     }
   }, [formErrorsArray]);
 
+  // if there are any authentication errors, display them in a toast message
   useEffect(() => {
     if (authErrors.length > 0) {
       authErrors.forEach((error) => toast.error(error));

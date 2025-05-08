@@ -2,9 +2,12 @@ import { useEffect } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { usePurchase } from "../hooks/usePurchase";
 import { formatDateLong } from "../utils/Date";
+import PaginationFooter from "../components/PaginationFooter";
 
 function Purchase() {
+  // use the useProduct hook to manage the products functionality
   const { loading: loadingProducts, products, getProducts } = useProduct();
+  // use the usePurchase hook to manage the purchases functionality
   const {
     getPurchases,
     createPurchase,
@@ -24,11 +27,13 @@ function Purchase() {
     handlePageChange,
   } = usePurchase();
 
+  // get the products and purchases when the component mounts
   useEffect(() => {
     getProducts();
     getPurchases();
   }, []);
 
+  // set the productId to the first product when the products are loaded
   useEffect(() => {
     if (!loadingProducts) {
       setValue("productId", products[0]?.id);
@@ -61,7 +66,7 @@ function Purchase() {
               className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
             >
               {products.map((product) => (
-                <option key={product.id} value={product.id}>
+                <option key={product.id} value={+product.id}>
                   {product.name}
                 </option>
               ))}
@@ -134,7 +139,7 @@ function Purchase() {
                 Clave
               </th>
               <th scope="col" className="px-6 py-3 min-w-[200px]">
-                Usuario
+                Realizado por:
               </th>
               <th scope="col" className="px-6 py-3 min-w-[200px]">
                 Rol de usuario
@@ -192,47 +197,12 @@ function Purchase() {
         </table>
       </section>
 
-      <section className="flex gap-x-5 items-center">
-        <div className="flex flex-col items-center w-full">
-          <span className="text-sm text-gray-700">
-            Mostrando de{" "}
-            <span className="font-semibold text-gray-900">
-              {currentPage * elementsPerPage -
-                elementsPerPage +
-                (totalPurchases > 0 ? 1 : 0)}
-            </span>{" "}
-            <span className="font-semibold">
-              a{" "}
-              {currentPage * elementsPerPage > totalPurchases
-                ? totalPurchases
-                : currentPage * elementsPerPage}
-            </span>{" "}
-            de{" "}
-            <span className="font-semibold text-gray-900">
-              {totalPurchases}
-            </span>{" "}
-            elementos
-          </span>
-          <div className="inline-flex mt-2 xs:mt-0">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-700 rounded-s hover:bg-blue-900 disabled:bg-blue-800 disabled:cursor-not-allowed"
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-700 border-0 border-s border-gray-500 rounded-e hover:bg-blue-900 disabled:bg-blue-800 disabled:cursor-not-allowed"
-              disabled={
-                currentPage === Math.ceil(totalPurchases / elementsPerPage)
-              }
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      </section>
+      <PaginationFooter
+        currentPage={currentPage}
+        elementsPerPage={elementsPerPage}
+        totalItems={totalPurchases}
+        handlePageChange={handlePageChange}
+      />
     </article>
   );
 }

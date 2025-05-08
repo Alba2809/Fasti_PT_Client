@@ -4,7 +4,9 @@ import { useShift } from "../hooks/useShift";
 import { formatDateLong } from "../utils/Date";
 
 function SalesCut() {
+  // use the useShift hook to manage the shifts functionality
   const { loading: loadingShifts, shifts, getShifts } = useShift();
+  // use the useSalesCut hook to manage the sales cuts functionality
   const {
     createCut,
     loadingGET: loadingGetCuts,
@@ -24,11 +26,13 @@ function SalesCut() {
     totalCuts,
   } = useSalesCut();
 
+  // get the shifts and sales cuts when the component mounts
   useEffect(() => {
     getCuts();
     getShifts();
   }, []);
 
+  // set the shiftId to the first shift when the shifts are loaded
   useEffect(() => {
     if (!loadingShifts) {
       setValue("shiftId", shifts[0]?.id);

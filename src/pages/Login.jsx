@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 function Login() {
+  // use the useAuth hook to manage the authentication functionality
   const { formErrors, register, onSubmit, loading, isAuthenticated } =
     useAuth();
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // use the useNavigate hook to navigate to the home page
 
+  // navigate to the home page when the user is authenticated
   useEffect(() => {
     if (isAuthenticated) {
       toast.success("Sesión iniciada");

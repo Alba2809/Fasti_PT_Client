@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { usePaginate } from "./usePaginate";
 import { useForm } from "react-hook-form";
 import { createSalesCutRequest, getSalesCutsRequest } from "../api/salesCut";
+import { scrollToTop } from "../utils/DomFunctions";
 import toast from "react-hot-toast";
 
+// this hook manages the sales cuts functionality
 export const useSalesCut = () => {
   const [loadingGet, setLoadingGet] = useState(false);
   const [loadingCreate, setLoadingCreate] = useState(false);
@@ -14,7 +16,7 @@ export const useSalesCut = () => {
     elementsPerPage,
     handlePaginate,
     paginatedItems: cutsToShow,
-  } = usePaginate();
+  } = usePaginate(); // use the usePaginate hook to manage the pagination of the sales cuts
   const elementsToShow = 5;
   const {
     register,
@@ -22,9 +24,9 @@ export const useSalesCut = () => {
     formState: { errors: formErrors },
     setValue,
     reset,
-  } = useForm();
-  const [warning, setWarning] = useState(null);
+  } = useForm(); // use the useForm hook to manage the form state
 
+  // get the sales cuts from the backend
   const getCuts = async () => {
     try {
       setLoadingGet(true);
@@ -32,14 +34,17 @@ export const useSalesCut = () => {
       const resCuts = await getSalesCutsRequest();
       setCuts(resCuts.data);
 
+      // update the pagination
       handlePaginate({
         items: resCuts.data,
         current: 1,
         elementsPP: elementsToShow,
       });
 
+      // set the date to the current date
       setValue("date", new Date().toISOString().split("T")[0]);
     } catch (error) {
+      // if there is an error, display the error messages
       const errors = error?.response?.data;
       if (errors) {
         errors.map((error) => toast.error(error));
@@ -49,6 +54,7 @@ export const useSalesCut = () => {
     }
   };
 
+  // send the data of the form to the backend to create a new sales cut
   const createCut = handleSubmit(async (data) => {
     try {
       if (loadingCreate) return;
@@ -59,6 +65,7 @@ export const useSalesCut = () => {
       if (res?.statusText === "OK") {
         getCuts();
         reset();
+        toast.success("Corte registrado exitosamente.");
       }
     } catch (error) {
       const errors = error?.response?.data;
@@ -70,11 +77,13 @@ export const useSalesCut = () => {
     }
   });
 
+  // set the shiftId to the selected shift
   const handleChangeShift = (e) => {
     setValue("shiftId", e.target.value);
     setSelectedShift(e.target.value);
   };
 
+  // handle the elements per page change
   const handleElementsPerPageChange = (e) => {
     setLoadingGet(true);
     handlePaginate({
@@ -85,6 +94,7 @@ export const useSalesCut = () => {
     setLoadingGet(false);
   };
 
+  // handle the page change
   const handlePageChange = (page) => {
     setLoadingGet(true);
     handlePaginate({
@@ -98,11 +108,7 @@ export const useSalesCut = () => {
     setLoadingGet(false);
   };
 
-  const scrollToTop = (name) => {
-    const table = document.getElementById(name);
-    table.scrollTop = 0;
-  };
-
+  // check if there are errors in the form and display them
   useEffect(() => {
     const errorsArray = Object.values(formErrors);
     if (errorsArray.length > 0) {

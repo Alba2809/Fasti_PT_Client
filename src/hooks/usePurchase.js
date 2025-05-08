@@ -3,7 +3,9 @@ import { createPurchaseRequest, getPurchasesRequest } from "../api/purchase";
 import { usePaginate } from "./usePaginate";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { scrollToTop } from "../utils/DomFunctions";
 
+// this hook manages the purchases functionality
 export const usePurchase = () => {
   const [loadingGet, setLoadingGet] = useState(false);
   const [loadingCreate, setLoadingCreate] = useState(false);
@@ -21,21 +23,24 @@ export const usePurchase = () => {
     handleSubmit,
     formState: { errors: formErrors },
     setValue,
-    reset
-  } = useForm();
+  } = useForm(); // use the useForm hook to manage the form state
 
+  // get the purchases from the backend
   const getPurchases = async () => {
     try {
       setLoadingGet(true);
       const res = await getPurchasesRequest();
 
       setPurchases(res.data);
+
+      // update the pagination
       handlePaginate({
         items: res.data,
         current: 1,
         elementsPP: elementsToShow,
       });
     } catch (error) {
+      // if there is an error, display the error messages
       const errors = error?.response?.data;
       if (errors) {
         errors.map((error) => toast.error(error));
@@ -45,6 +50,7 @@ export const usePurchase = () => {
     }
   };
 
+  // send the data of the form to the backend to create a new purchase
   const createPurchase = handleSubmit(async (data) => {
     try {
       if (loadingCreate) return;
@@ -54,6 +60,7 @@ export const usePurchase = () => {
       if (res?.statusText === "OK") {
         getPurchases();
         setValue("amount", "");
+        toast.success("Compra registrada exitosamente.");
       }
     } catch (error) {
       const errors = error?.response?.data;
@@ -65,13 +72,15 @@ export const usePurchase = () => {
     }
   });
 
+  // set the productId to the selected product and the cost to the product's purchase cost
   const handleChangeProduct = (value, product) => {
     setValue("productId", value);
     setSelectedProduct(value);
     setValue("amount", "");
-    setValue("cost", product.purchase_cost);
+    setValue("cost", +product.purchase_cost);
   };
 
+  // handle the elements per page change
   const handleElementsPerPageChange = (e) => {
     setLoadingGet(true);
     handlePaginate({
@@ -82,6 +91,7 @@ export const usePurchase = () => {
     setLoadingGet(false);
   };
 
+  // handle the page change
   const handlePageChange = (page) => {
     setLoadingGet(true);
     handlePaginate({
@@ -95,11 +105,7 @@ export const usePurchase = () => {
     setLoadingGet(false);
   };
 
-  const scrollToTop = (name) => {
-    const table = document.getElementById(name);
-    table.scrollTop = 0;
-  }
-
+  // check if there are errors in the form and display them
   useEffect(() => {
     const errorsArray = Object.values(formErrors);
     if (errorsArray.length > 0) {

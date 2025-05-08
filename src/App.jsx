@@ -15,6 +15,9 @@ import SalesCut from "./pages/SalesCut";
 function App() {
   const location = useLocation();
 
+  // check if the user is authenticated and redirect to the login page if not
+  // display the dashboard if the user is authenticated
+  // created the routes for each page based on the user's role
   return (
     <Routes location={location} key={location.pathname}>
       <Route element={<AuthValidator />}>

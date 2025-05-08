@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+// this component displays a menu option with the icon, the name, and the path
 function MenuOption({ data, currentPath }) {
   return (
     <Link

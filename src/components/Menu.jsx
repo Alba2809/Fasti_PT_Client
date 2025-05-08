@@ -7,16 +7,18 @@ import MenuOption from "./MenuOption";
 function Menu() {
   const { user, logout } = useAuthContext();
 
+  // get the paths of the user's options based on his role
   const menuOptions = MenuPaths[user?.role?.name];
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname); // reference to the current path to highlight the current option
 
+  // update the current path when the window location changes
   useLayoutEffect(() => {
     setCurrentPath(window.location.pathname);
   }, [window.location.pathname]);
 
   return (
-    <article className="w-full h-full bg-[#95bcf0] flex flex-col gap-y-5 border-r border-gray-200 shadow-md ">
-      <h1 className="text-center text-2xl font-semibold">Menu</h1>
+    <article className="w-full h-full bg-[#95bcf0] flex flex-col gap-y-5 border-r border-gray-200 shadow-md">
+      <h1 className="text-center text-2xl font-semibold mt-3">Menu</h1>
 
       <nav className="flex flex-col gap-y-2 flex-grow px-1 divide-y divide-white">
         {menuOptions.map((item) => (
@@ -26,7 +28,7 @@ function Menu() {
         ))}
       </nav>
 
-      <footer className="text-center text-sm flex flex-col items-center gap-y-3">
+      <footer className="text-center text-sm flex flex-col items-center gap-y-3 mb-1">
         <p className="uppercase">
           {user?.username} - {user?.role?.name}
         </p>
@@ -37,7 +39,18 @@ function Menu() {
           <CgLogOut color="white" size="1.5em" />
           <span className="ml-2">Cerrar sesión</span>
         </button>
-        <p>Copyright © 2025 by #</p>
+        <p>
+          Copyright © 2025 by{" "}
+          <a
+            href="https://github.com/Alba2809"
+            dir="ltr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-sky-900 hover:text-sky-700"
+          >
+            Ivan Alba
+          </a>
+        </p>
       </footer>
     </article>
   );

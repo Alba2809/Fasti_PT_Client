@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { usePaginate } from "./usePaginate";
 import { getLogsRequest } from "../api/log";
+import { scrollToTop } from "../utils/DomFunctions";
 import toast from "react-hot-toast";
 
+// this hook manages the logs functionality
 export const useLog = () => {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -12,8 +14,9 @@ export const useLog = () => {
     elementsPerPage,
     handlePaginate,
     paginatedItems: logsToShow,
-  } = usePaginate();
+  } = usePaginate(); // use the usePaginate hook to manage the pagination of the logs
 
+  // get the logs from the backend
   const getLogs = async () => {
     try {
       setLoading(true);
@@ -21,6 +24,8 @@ export const useLog = () => {
       const res = await getLogsRequest();
 
       setLogs(res.data);
+
+      // update the pagination
       handlePaginate({
         items: res.data,
         current: 1,
@@ -36,6 +41,7 @@ export const useLog = () => {
     }
   };
 
+  // handle the elements per page change
   const handleElementsPerPageChange = (e) => {
     setLoading(true);
     handlePaginate({
@@ -46,6 +52,7 @@ export const useLog = () => {
     setLoading(false);
   };
 
+  // handle the page change
   const handlePageChange = (page) => {
     setLoading(true);
 
@@ -55,15 +62,10 @@ export const useLog = () => {
       elementsPP: elementsPerPage,
     });
 
-    scrollToTop("logsTable");
+    scrollToTop("logsTable"); // scroll to the top of the table
 
     setLoading(false);
   };
-
-  const scrollToTop = (name) => {
-    const table = document.getElementById(name);
-    table.scrollTop = 0;
-  }
 
   return {
     logs,

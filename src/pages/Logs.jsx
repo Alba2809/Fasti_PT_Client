@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useLog } from "../hooks/useLog";
 import { formatDateLong } from "../utils/Date";
+import PaginationFooter from "../components/PaginationFooter";
 
 function Logs() {
+  // use the useLog hook to manage the logs functionality
   const {
     getLogs,
     logsToShow,
@@ -14,6 +16,7 @@ function Logs() {
     handlePageChange,
   } = useLog();
 
+  // get the logs when the component mounts
   useEffect(() => {
     getLogs();
   }, []);
@@ -41,21 +44,19 @@ function Logs() {
       </section>
 
       <section id="logsTable" className="w-full overflow-x-auto grow">
-        <table
-          className="w-full text-sm text-left rtl:text-right text-gray-500 min-w-max"
-        >
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 min-w-max">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3 min-w-[20px]">
                 Clave
               </th>
-              <th scope="col" className="px-6 py-3 min-w-[200px]">
+              <th scope="col" className="px-6 py-3 min-w-[150px]">
                 Usuario
               </th>
-              <th scope="col" className="px-6 py-3 min-w-[200px]">
+              <th scope="col" className="px-6 py-3 min-w-[150px]">
                 Rol de usuario
               </th>
-              <th scope="col" className="px-6 py-3 min-w-[20px]">
+              <th scope="col" className="px-6 py-3 min-w-[300px]">
                 Acción
               </th>
               <th scope="col" className="px-6 py-3 min-w-[150px]">
@@ -92,42 +93,12 @@ function Logs() {
         </table>
       </section>
 
-      <section className="flex gap-x-5 items-center">
-        <div className="flex flex-col items-center w-full">
-          <span className="text-sm text-gray-700">
-            Mostrando de{" "}
-            <span className="font-semibold text-gray-900">
-              {currentPage * elementsPerPage -
-                elementsPerPage +
-                (totalLogs > 0 ? 1 : 0)}
-            </span>{" "}
-            <span className="font-semibold">
-              a{" "}
-              {currentPage * elementsPerPage > totalLogs
-                ? totalLogs
-                : currentPage * elementsPerPage}
-            </span>{" "}
-            de <span className="font-semibold text-gray-900">{totalLogs}</span>{" "}
-            elementos
-          </span>
-          <div className="inline-flex mt-2 xs:mt-0">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-700 rounded-s hover:bg-blue-900 disabled:bg-blue-800 disabled:cursor-not-allowed"
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-700 border-0 border-s border-gray-500 rounded-e hover:bg-blue-900 disabled:bg-blue-800 disabled:cursor-not-allowed"
-              disabled={currentPage === Math.ceil(totalLogs / elementsPerPage)}
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      </section>
+      <PaginationFooter
+        currentPage={currentPage}
+        elementsPerPage={elementsPerPage}
+        totalItems={totalLogs}
+        handlePageChange={handlePageChange}
+      />
     </article>
   );
 }

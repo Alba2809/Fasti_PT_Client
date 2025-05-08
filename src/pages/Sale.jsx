@@ -2,9 +2,12 @@ import { useEffect } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useSale } from "../hooks/useSale";
 import { formatDateLong } from "../utils/Date";
+import PaginationFooter from "../components/PaginationFooter";
 
 function Sale() {
+  // use the useProduct hook to manage the products functionality
   const { loading: loadingProducts, products, getProducts } = useProduct();
+  // use the useSale hook to manage the sales functionality
   const {
     createSale,
     loadingGET: loadingGetSales,
@@ -25,17 +28,20 @@ function Sale() {
     totalSales,
   } = useSale();
 
+  // get the products and sales when the component mounts
   useEffect(() => {
     getProducts();
     getSales();
   }, []);
 
+  // set the productId to the first product when the products are loaded
   useEffect(() => {
     if (!loadingProducts) {
       setValue("productId", products[0]?.id);
     }
   }, [loadingProducts]);
 
+  // set the total amount based on the amount and the product's sale cost
   const handleChangeAmount = (e) => {
     const value = !e.target.value || e.target.value === "" ? 0 : e.target.value;
     const total = parseInt(value);
@@ -184,42 +190,13 @@ function Sale() {
         </table>
       </section>
 
-      <section className="flex gap-x-5 items-center">
-        <div className="flex flex-col items-center w-full">
-          <span className="text-sm text-gray-700">
-            Mostrando de{" "}
-            <span className="font-semibold text-gray-900">
-              {currentPage * elementsPerPage -
-                elementsPerPage +
-                (totalSales > 0 ? 1 : 0)}
-            </span>{" "}
-            <span className="font-semibold">
-              a{" "}
-              {currentPage * elementsPerPage > totalSales
-                ? totalSales
-                : currentPage * elementsPerPage}
-            </span>{" "}
-            de <span className="font-semibold text-gray-900">{totalSales}</span>{" "}
-            elementos
-          </span>
-          <div className="inline-flex mt-2 xs:mt-0">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-700 rounded-s hover:bg-blue-900 disabled:bg-blue-800 disabled:cursor-not-allowed"
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-700 border-0 border-s border-gray-500 rounded-e hover:bg-blue-900 disabled:bg-blue-800 disabled:cursor-not-allowed"
-              disabled={currentPage === Math.ceil(totalSales / elementsPerPage)}
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      </section>
+      <PaginationFooter
+        currentPage={currentPage}
+        elementsPerPage={elementsPerPage}
+        totalItems={totalSales}
+        handlePageChange={handlePageChange}
+      />
+      
     </article>
   );
 }
