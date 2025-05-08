@@ -11,7 +11,7 @@ function Purchase() {
     loadingGET: loadingGetPurchase,
     loadingCREATE: loadingCreatePurchase,
     totalPurchases,
-    
+
     register,
     setValue,
     selectedProduct,
@@ -30,8 +30,10 @@ function Purchase() {
   }, []);
 
   useEffect(() => {
-    if (loadingProducts) {
+    if (!loadingProducts) {
       setValue("productId", products[0]?.id);
+      const prod = products.find((product) => product.id === +products[0]?.id);
+      setValue("cost", prod?.purchase_cost);
     }
   }, [loadingProducts]);
 
@@ -50,7 +52,12 @@ function Purchase() {
                 required: "Se requiere el producto",
               })}
               value={selectedProduct ?? products[0]?.id}
-              onChange={handleChangeProduct}
+              onChange={(e) =>
+                handleChangeProduct(
+                  +e.target.value,
+                  products.find((product) => product.id === +e.target.value)
+                )
+              }
               className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
             >
               {products.map((product) => (
@@ -80,7 +87,7 @@ function Purchase() {
           <input
             type="number"
             step={0.01}
-            placeholder="Costo"
+            placeholder="Costo por unidad"
             {...register("cost", {
               required: "Se requiere el costo",
               min: {
@@ -119,7 +126,7 @@ function Purchase() {
         </label>
       </section>
 
-      <section className="w-full overflow-x-auto grow">
+      <section id="purchasesTable" className="w-full overflow-x-auto grow">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 min-w-max">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>

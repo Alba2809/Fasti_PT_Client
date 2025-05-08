@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useLog } from "../hooks/useLog";
 import { formatDateLong } from "../utils/Date";
 

@@ -1,48 +1,87 @@
 import { useEffect } from "react";
-import { useProduct } from "../hooks/useProduct";
+import { useSalesCut } from "../hooks/useSalesCut";
+import { useShift } from "../hooks/useShift";
 import { formatDateLong } from "../utils/Date";
-import { IoMdRefresh } from "react-icons/io";
 
-function Product() {
+function SalesCut() {
+  const { loading: loadingShifts, shifts, getShifts } = useShift();
   const {
-    productsToShow,
-    totalProducts,
-    getProducts,
-    loading,
-    handleSearch,
+    createCut,
+    loadingGET: loadingGetCuts,
+    loadingCREATE: loadingCreateCut,
+    getCuts,
+
+    register,
+    setValue,
+    selectedShift,
+    handleChangeShift,
+
+    cutsToShow,
     currentPage,
     elementsPerPage,
-    handlePageChange,
-    search,
     handleElementsPerPageChange,
-  } = useProduct();
+    handlePageChange,
+    totalCuts,
+  } = useSalesCut();
 
   useEffect(() => {
-    getProducts();
+    getCuts();
+    getShifts();
   }, []);
+
+  useEffect(() => {
+    if (!loadingShifts) {
+      setValue("shiftId", shifts[0]?.id);
+    }
+  }, [loadingShifts]);
 
   return (
     <article className="flex flex-col gap-y-5 size-full">
-      <h2 className="text-xl">Productos</h2>
+      <h2 className="text-xl">Cortes de ventas</h2>
 
-      <section className="flex gap-x-5 items-center">
-        <h3 className="text-lg">Buscar producto:</h3>
-        <input
-          type="text"
-          value={search}
-          placeholder="Nombre de producto"
-          className="w-full max-w-[300px] rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
-          onChange={handleSearch}
-        />
-        <button
-          className="rounded-full hover:bg-gray-100 text-white text-lg"
-          onClick={getProducts}
-        >
-          <IoMdRefresh color="green" size="2.5em" />
-        </button>
+      <section className="flex gap-x-3 items-center">
+        <h3 className="text-lg">Realizar corte:</h3>
+        <form onSubmit={createCut} className="flex gap-x-3">
+          {loadingGetCuts ? (
+            <p>Cargando...</p>
+          ) : (
+            <select
+              {...register("shiftId", {
+                required: "Se requiere el turno",
+              })}
+              value={selectedShift ?? shifts[0]?.id}
+              onChange={handleChangeShift}
+              className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
+            >
+              {shifts.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name} - {item.start_time} : {item.end_time}
+                </option>
+              ))}
+            </select>
+          )}
+
+          <input
+            type="date"
+            placeholder="Fecha de ventas"
+            {...register("date", {
+              required: "Se requiere la fecha de ventas",
+            })}
+            className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
+          />
+
+          <button
+            className="rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-900 text-lg"
+            type="submit"
+            disabled={loadingCreateCut}
+          >
+            Registrar
+          </button>
+        </form>
+        <p></p>
       </section>
 
-      <section id="productsTable" className="flex gap-x-5 items-center">
+      <section className="flex gap-x-5 items-center">
         <label className="text-sm text-gray-700">
           Mostrar{" "}
           <select
@@ -60,7 +99,7 @@ function Product() {
         </label>
       </section>
 
-      <section className="w-full overflow-x-auto grow">
+      <section id="salesTable" className="w-full overflow-x-auto grow">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 min-w-max">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
@@ -68,53 +107,49 @@ function Product() {
                 Clave
               </th>
               <th scope="col" className="px-6 py-3 min-w-[200px]">
-                Nombre
-              </th>
-              <th scope="col" className="px-6 py-3 min-w-[20px]">
-                Piezas existentes
+                Realizado por:
               </th>
               <th scope="col" className="px-6 py-3 min-w-[200px]">
+                Rol de usuario
+              </th>
+              <th scope="col" className="px-6 py-3 min-w-[150px]">
+                Turno
+              </th>
+              <th scope="col" className="px-6 py-3 min-w-[20px]">
+                Total
+              </th>
+              <th scope="col" className="px-6 py-3 min-w-[150px]">
+                Fecha de corte
+              </th>
+              <th scope="col" className="px-6 py-3 min-w-[150px]">
                 Fecha de registro
-              </th>
-              <th scope="col" className="px-6 py-3 min-w-[20px]">
-                Entradas
-              </th>
-              <th scope="col" className="px-6 py-3 min-w-[20px]">
-                Salidas
-              </th>
-              <th scope="col" className="px-6 py-3 min-w-[20px]">
-                Costo de compra
-              </th>
-              <th scope="col" className="px-6 py-3 min-w-[20px]">
-                Precio de venta
               </th>
             </tr>
           </thead>
-          <tbody>
-            {loading ? (
+          <tbody className="font-mono">
+            {loadingGetCuts ? (
               <tr className="bg-white border-b border-gray-200">
                 <td colSpan="7" className="p-2">
                   Cargando...
                 </td>
               </tr>
             ) : (
-              productsToShow?.map((product) => (
+              cutsToShow?.map((item) => (
                 <tr
-                  key={product.id}
+                  key={item.id}
                   className="bg-white border-b border-gray-200 hover:bg-gray-100"
                 >
                   <th scope="row" className="px-6 py-4">
-                    {product.id}
+                    {item.id}
                   </th>
-                  <td className="px-6 py-4">{product.name}</td>
-                  <td className="px-6 py-4">{product.current_stock}</td>
+                  <td className="px-6 py-4">{item.user.username}</td>
+                  <td className="px-6 py-4">{item.user.role.name}</td>
+                  <td className="px-6 py-4">{item.shift.name}</td>
+                  <td className="px-6 py-4">{item.totalSold ?? 0}</td>
+                  <td className="px-6 py-4">{formatDateLong(item.date, false)}</td>
                   <td className="px-6 py-4">
-                    {formatDateLong(product.createdAt)}
+                    {formatDateLong(item.createdAt)}
                   </td>
-                  <td className="px-6 py-4">{product.entrances}</td>
-                  <td className="px-6 py-4">{product.exits}</td>
-                  <td className="px-6 py-4">{product.purchase_cost}</td>
-                  <td className="px-6 py-4">{product.sale_cost}</td>
                 </tr>
               ))
             )}
@@ -129,16 +164,15 @@ function Product() {
             <span className="font-semibold text-gray-900">
               {currentPage * elementsPerPage -
                 elementsPerPage +
-                (totalProducts > 0 ? 1 : 0)}
+                (totalCuts > 0 ? 1 : 0)}
             </span>{" "}
             <span className="font-semibold">
               a{" "}
-              {currentPage * elementsPerPage > totalProducts
-                ? totalProducts
+              {currentPage * elementsPerPage > totalCuts
+                ? totalCuts
                 : currentPage * elementsPerPage}
             </span>{" "}
-            de{" "}
-            <span className="font-semibold text-gray-900">{totalProducts}</span>{" "}
+            de <span className="font-semibold text-gray-900">{totalCuts}</span>{" "}
             elementos
           </span>
           <div className="inline-flex mt-2 xs:mt-0">
@@ -152,9 +186,7 @@ function Product() {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               className="flex items-center justify-center px-3 h-8 text-sm font-medium text-white bg-blue-700 border-0 border-s border-gray-500 rounded-e hover:bg-blue-900 disabled:bg-blue-800 disabled:cursor-not-allowed"
-              disabled={
-                currentPage === Math.ceil(totalProducts / elementsPerPage)
-              }
+              disabled={currentPage === Math.ceil(totalCuts / elementsPerPage)}
             >
               Siguiente
             </button>
@@ -165,4 +197,4 @@ function Product() {
   );
 }
 
-export default Product;
+export default SalesCut;

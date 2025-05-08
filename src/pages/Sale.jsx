@@ -13,6 +13,7 @@ function Sale() {
 
     register,
     setValue,
+    getValues,
     selectedProduct,
     handleChangeProduct,
 
@@ -30,10 +31,20 @@ function Sale() {
   }, []);
 
   useEffect(() => {
-    if (loadingProducts) {
+    if (!loadingProducts) {
       setValue("productId", products[0]?.id);
     }
   }, [loadingProducts]);
+
+  const handleChangeAmount = (e) => {
+    const value = !e.target.value || e.target.value === "" ? 0 : e.target.value;
+    const total = parseInt(value);
+    const product = products.find(
+      (product) => product.id === +getValues("productId")
+    );
+    console.log(value, total, product, getValues("productId"));
+    setValue("total", total * (product?.sale_cost ?? 0));
+  };
 
   return (
     <article className="flex flex-col gap-y-5 size-full">
@@ -71,21 +82,16 @@ function Sale() {
                 message: "La cantidad no puede ser menor a 1",
               },
             })}
+            onChange={handleChangeAmount}
             className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
           />
 
           <input
             type="number"
-            step={0.01}
             placeholder="Total"
-            {...register("total", {
-              required: "Se requiere el total",
-              min: {
-                value: 1,
-                message: "El total no puede ser menor a 1",
-              },
-            })}
-            className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
+            {...register("total")}
+            className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none disabled:bg-gray-200"
+            disabled
           />
 
           <button
@@ -116,7 +122,7 @@ function Sale() {
         </label>
       </section>
 
-      <section className="w-full overflow-x-auto grow">
+      <section id="salesTable" className="w-full overflow-x-auto grow">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 min-w-max">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
@@ -124,7 +130,7 @@ function Sale() {
                 Clave
               </th>
               <th scope="col" className="px-6 py-3 min-w-[200px]">
-                Usuario
+                Realizado por:
               </th>
               <th scope="col" className="px-6 py-3 min-w-[200px]">
                 Rol de usuario

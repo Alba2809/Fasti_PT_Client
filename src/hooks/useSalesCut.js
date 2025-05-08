@@ -1,19 +1,19 @@
-import { useForm } from "react-hook-form";
-import { usePaginate } from "./usePaginate";
 import { useEffect, useState } from "react";
+import { usePaginate } from "./usePaginate";
+import { useForm } from "react-hook-form";
+import { createSalesCutRequest, getSalesCutsRequest } from "../api/salesCut";
 import toast from "react-hot-toast";
-import { createSaleRequest, getSalesRequest } from "../api/sale";
 
-export const useSale = () => {
+export const useSalesCut = () => {
   const [loadingGet, setLoadingGet] = useState(false);
   const [loadingCreate, setLoadingCreate] = useState(false);
-  const [sales, setSales] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [cuts, setCuts] = useState([]);
+  const [selectedShift, setSelectedShift] = useState(null);
   const {
     currentPage,
     elementsPerPage,
     handlePaginate,
-    paginatedItems: salesToShow,
+    paginatedItems: cutsToShow,
   } = usePaginate();
   const elementsToShow = 5;
   const {
@@ -22,20 +22,23 @@ export const useSale = () => {
     formState: { errors: formErrors },
     setValue,
     reset,
-    getValues
   } = useForm();
+  const [warning, setWarning] = useState(null);
 
-  const getSales = async () => {
+  const getCuts = async () => {
     try {
       setLoadingGet(true);
-      const res = await getSalesRequest();
 
-      setSales(res.data);
+      const resCuts = await getSalesCutsRequest();
+      setCuts(resCuts.data);
+
       handlePaginate({
-        items: res.data,
+        items: resCuts.data,
         current: 1,
         elementsPP: elementsToShow,
       });
+
+      setValue("date", new Date().toISOString().split("T")[0]);
     } catch (error) {
       const errors = error?.response?.data;
       if (errors) {
@@ -46,16 +49,16 @@ export const useSale = () => {
     }
   };
 
-  const createSale = handleSubmit(async (data) => {
+  const createCut = handleSubmit(async (data) => {
     try {
       if (loadingCreate) return;
 
       setLoadingCreate(true);
-      const res = await createSaleRequest(data);
+      const res = await createSalesCutRequest(data);
+
       if (res?.statusText === "OK") {
-        getSales();
-        setValue("amount", "");
-        setValue("total", "");
+        getCuts();
+        reset();
       }
     } catch (error) {
       const errors = error?.response?.data;
@@ -67,19 +70,15 @@ export const useSale = () => {
     }
   });
 
-  const handleChangeProduct = (e) => {
-    setValue("productId", e.target.value);
-    setSelectedProduct(e.target.value);
-
-    // reset the amount and total
-    setValue("amount", "");
-    setValue("total", "");
+  const handleChangeShift = (e) => {
+    setValue("shiftId", e.target.value);
+    setSelectedShift(e.target.value);
   };
 
   const handleElementsPerPageChange = (e) => {
     setLoadingGet(true);
     handlePaginate({
-      items: sales,
+      items: cuts,
       current: 1,
       elementsPP: e.target.value,
     });
@@ -89,12 +88,12 @@ export const useSale = () => {
   const handlePageChange = (page) => {
     setLoadingGet(true);
     handlePaginate({
-      items: sales,
+      items: cuts,
       current: page,
       elementsPP: elementsPerPage,
     });
 
-    scrollToTop("salesTable");
+    scrollToTop("cutsTable");
 
     setLoadingGet(false);
   };
@@ -102,7 +101,7 @@ export const useSale = () => {
   const scrollToTop = (name) => {
     const table = document.getElementById(name);
     table.scrollTop = 0;
-  }
+  };
 
   useEffect(() => {
     const errorsArray = Object.values(formErrors);
@@ -112,22 +111,21 @@ export const useSale = () => {
   }, [formErrors]);
 
   return {
-    sales,
-    totalSales: sales.length,
-    salesToShow,
-    getSales,
+    cuts,
+    totalCuts: cuts.length,
+    cutsToShow,
+    getCuts,
     loadingGet,
     loadingCreate,
-    createSale,
+    createCut,
     currentPage,
     elementsPerPage,
     handleElementsPerPageChange,
     handlePageChange,
     register,
     setValue,
-    getValues,
     formErrors,
-    selectedProduct,
-    handleChangeProduct,
+    selectedShift,
+    handleChangeShift,
   };
 };

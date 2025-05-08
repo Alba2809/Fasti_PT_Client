@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function MenuOption({data, currentPath}) {
+function MenuOption({ data, currentPath }) {
   return (
     <Link
       to={data.to}

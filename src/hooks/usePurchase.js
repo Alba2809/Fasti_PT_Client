@@ -53,7 +53,7 @@ export const usePurchase = () => {
       const res = await createPurchaseRequest(data);
       if (res?.statusText === "OK") {
         getPurchases();
-        reset();
+        setValue("amount", "");
       }
     } catch (error) {
       const errors = error?.response?.data;
@@ -65,9 +65,11 @@ export const usePurchase = () => {
     }
   });
 
-  const handleChangeProduct = (e) => {
-    setValue("productId", e.target.value);
-    setSelectedProduct(e.target.value);
+  const handleChangeProduct = (value, product) => {
+    setValue("productId", value);
+    setSelectedProduct(value);
+    setValue("amount", "");
+    setValue("cost", product.purchase_cost);
   };
 
   const handleElementsPerPageChange = (e) => {
@@ -87,8 +89,16 @@ export const usePurchase = () => {
       current: page,
       elementsPP: elementsPerPage,
     });
+
+    scrollToTop("purchasesTable");
+
     setLoadingGet(false);
   };
+
+  const scrollToTop = (name) => {
+    const table = document.getElementById(name);
+    table.scrollTop = 0;
+  }
 
   useEffect(() => {
     const errorsArray = Object.values(formErrors);

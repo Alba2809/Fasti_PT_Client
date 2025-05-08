@@ -88,8 +88,16 @@ export const useProduct = () => {
       current: page,
       elementsPP: elementsPerPage,
     });
+
+    scrollToTop("productsTable");
+
     setLoading(false);
   };
+
+  const scrollToTop = (name) => {
+    const table = document.getElementById(name);
+    table.scrollTop = 0;
+  }
 
   return {
     products,

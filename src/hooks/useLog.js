@@ -55,11 +55,15 @@ export const useLog = () => {
       elementsPP: elementsPerPage,
     });
 
-    const table = document.getElementById("logsTable");
-    table.scrollTop = 0;
+    scrollToTop("logsTable");
 
     setLoading(false);
   };
+
+  const scrollToTop = (name) => {
+    const table = document.getElementById(name);
+    table.scrollTop = 0;
+  }
 
   return {
     logs,

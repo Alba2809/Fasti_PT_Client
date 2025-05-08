@@ -3,7 +3,7 @@ import Menu from "../components/Menu";
 
 function Dashboard() {
   return (
-    <div className="h-screen w-screen flex">
+    <div className="h-screen w-screen flex font-serif">
       <section className="max-w-[280px] min-w-[280px]">
         <Menu />
       </section>

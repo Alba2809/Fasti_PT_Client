@@ -1,5 +1,5 @@
 import { Route, Routes, useLocation } from "react-router-dom";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/Dashboard";
 import { Paths } from "./utils/Paths";
 import Login from "./pages/Login";
 import AuthValidator from "./components/auth/AuthValidator";
@@ -9,6 +9,8 @@ import Product from "./pages/Product";
 import Purchase from "./pages/Purchase";
 import Sale from "./pages/Sale";
 import Logs from "./pages/Logs";
+import Welcome from "./pages/Welcome";
+import SalesCut from "./pages/SalesCut";
 
 function App() {
   const location = useLocation();
@@ -17,7 +19,7 @@ function App() {
     <Routes location={location} key={location.pathname}>
       <Route element={<AuthValidator />}>
         <Route element={<Dashboard />}>
-          <Route path={Paths.main} element={<h1>Bienvenido</h1>} />
+          <Route path={Paths.main} element={<Welcome />} />
           
           {/* Multiple roles */}
           <Route
@@ -25,6 +27,7 @@ function App() {
           >
             <Route path={Paths.products} element={<Product />} />
             <Route path={Paths.sales} element={<Sale />} />
+            <Route path={Paths.salesCuts} element={<SalesCut />} />
           </Route>
 
           {/* Gerente */}
