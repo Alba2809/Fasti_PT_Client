@@ -1,0 +1,45 @@
+import { Route, Routes, useLocation } from "react-router-dom";
+import Dashboard from "./pages/dashboard";
+import { Paths } from "./utils/Paths";
+import Login from "./pages/Login";
+import AuthValidator from "./components/auth/AuthValidator";
+import RolValidator from "./components/auth/RolValidator";
+import { Roles } from "./utils/Roles";
+import Product from "./pages/Product";
+import Purchase from "./pages/Purchase";
+import Sale from "./pages/Sale";
+import Logs from "./pages/Logs";
+
+function App() {
+  const location = useLocation();
+
+  return (
+    <Routes location={location} key={location.pathname}>
+      <Route element={<AuthValidator />}>
+        <Route element={<Dashboard />}>
+          <Route path={Paths.main} element={<h1>Bienvenido</h1>} />
+          
+          {/* Multiple roles */}
+          <Route
+            element={<RolValidator roles={[Roles.cajero.name, Roles.gerente.name]} />}
+          >
+            <Route path={Paths.products} element={<Product />} />
+            <Route path={Paths.sales} element={<Sale />} />
+          </Route>
+
+          {/* Gerente */}
+          <Route
+            element={<RolValidator roles={[Roles.gerente.name]} />}
+          >
+            <Route path={Paths.purchases} element={<Purchase />} />
+            <Route path={Paths.logs} element={<Logs />} />
+          </Route>
+
+        </Route>
+      </Route>
+      <Route path={Paths.login} element={<Login />} />
+    </Routes>
+  );
+}
+
+export default App;
