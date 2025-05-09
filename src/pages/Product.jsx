@@ -45,6 +45,8 @@ function Product() {
         </button>
       </section>
 
+      <hr className="border-gray-300 border-dashed" />
+
       <section id="productsTable" className="flex gap-x-5 items-center">
         <label className="text-sm text-gray-700">
           Mostrar{" "}

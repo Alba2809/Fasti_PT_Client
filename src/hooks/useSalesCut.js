@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { createSalesCutRequest, getSalesCutsRequest } from "../api/salesCut";
 import { scrollToTop } from "../utils/DomFunctions";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
 
 // this hook manages the sales cuts functionality
 export const useSalesCut = () => {
@@ -42,7 +43,12 @@ export const useSalesCut = () => {
       });
 
       // set the date to the current date
-      setValue("date", new Date().toISOString().split("T")[0]);
+      const date = new Date();
+      const offset = date.getTimezoneOffset() * 60000; // offset in milliseconds from UTC-6
+      const localDate = new Date(date.getTime() - offset);
+      const formatted = dayjs(localDate).format("YYYY-MM-DD");
+
+      setValue("date", formatted);
     } catch (error) {
       // if there is an error, display the error messages
       const errors = error?.response?.data;
@@ -64,7 +70,6 @@ export const useSalesCut = () => {
 
       if (res?.statusText === "OK") {
         getCuts();
-        reset();
         toast.success("Corte registrado exitosamente.");
       }
     } catch (error) {

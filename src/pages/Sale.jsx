@@ -53,62 +53,75 @@ function Sale() {
   };
 
   return (
-    <article className="flex flex-col gap-y-5 size-full">
+    <article className="flex flex-col gap-y-5 size-full ">
       <h2 className="text-xl">Ventas</h2>
 
-      <section className="flex gap-x-3 items-center">
-        <h3 className="text-lg">Registrar venta:</h3>
-        <form onSubmit={createSale} className="flex gap-x-3">
+      <section className="flex flex-col gap-y-3">
+        <h3 className="text-lg">Registrar venta</h3>
+        <form onSubmit={createSale} className="flex gap-x-3 items-end">
           {loadingProducts ? (
-            <p>Cargando...</p>
+            <p className="h-[66px]">Cargando productos...</p>
           ) : (
-            <select
-              {...register("productId", {
-                required: "Se requiere el producto",
-              })}
-              value={selectedProduct ?? products[0]?.id}
-              onChange={handleChangeProduct}
-              className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
-            >
-              {products.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
+            <>
+              <div className="flex flex-col">
+                <label cllabelme="text-md">Producto:</label>
+                <select
+                  {...register("productId", {
+                    required: "Se requiere el producto",
+                  })}
+                  value={selectedProduct ?? products[0]?.id}
+                  onChange={handleChangeProduct}
+                  className="min-w-[150px] min-h-[42px] rounded-md border p-2 text-gray-500 focus:border-2 focus:outline-none border-gray-300 focus:border-blue-500"
+                >
+                  {products.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col">
+                <label cllabelme="text-md">Cantidad:</label>
+                <input
+                  type="number"
+                  placeholder="Cantidad"
+                  {...register("amount", {
+                    required: "Se requiere la cantidad",
+                    min: {
+                      value: 1,
+                      message: "La cantidad no puede ser menor a 1",
+                    },
+                  })}
+                  onChange={handleChangeAmount}
+                  className="rounded-md border p-2 text-gray-500 focus:border-2 focus:outline-none border-gray-300 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-md">Total:</label>
+                <input
+                  type="number"
+                  placeholder="Total"
+                  {...register("total")}
+                  className="rounded-md border p-2 text-gray-500 focus:border-2 focus:outline-none border-gray-300 focus:border-blue-500 disabled:bg-gray-100"
+                  disabled
+                />
+              </div>
+
+              <button
+                className="rounded-md px-3 py-2 bg-[#4675c1] hover:bg-[#7ba5e0] text-white text-lg h-fit transition duration-300 ease-in-out"
+                type="submit"
+                disabled={loadingCreateSale}
+              >
+                Registrar
+              </button>
+            </>
           )}
-
-          <input
-            type="number"
-            placeholder="Cantidad"
-            {...register("amount", {
-              required: "Se requiere la cantidad",
-              min: {
-                value: 1,
-                message: "La cantidad no puede ser menor a 1",
-              },
-            })}
-            onChange={handleChangeAmount}
-            className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
-          />
-
-          <input
-            type="number"
-            placeholder="Total"
-            {...register("total")}
-            className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none disabled:bg-gray-200"
-            disabled
-          />
-
-          <button
-            className="rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-900 text-lg"
-            type="submit"
-            disabled={loadingCreateSale}
-          >
-            Registrar
-          </button>
         </form>
       </section>
+
+      <hr className="border-gray-300 border-dashed" />
 
       <section className="flex gap-x-5 items-center">
         <label className="text-sm text-gray-700">
@@ -196,7 +209,6 @@ function Sale() {
         totalItems={totalSales}
         handlePageChange={handlePageChange}
       />
-      
     </article>
   );
 }

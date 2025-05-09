@@ -46,72 +46,85 @@ function Purchase() {
     <article className="flex flex-col gap-y-5 size-full">
       <h2 className="text-xl">Compras</h2>
 
-      <section className="flex gap-x-3 items-center">
-        <h3 className="text-lg">Registrar compra:</h3>
-        <form onSubmit={createPurchase} className="flex gap-x-3">
+      <section className="flex flex-col gap-y-3">
+        <h3 className="text-lg">Registrar compra</h3>
+        <form onSubmit={createPurchase} className="flex gap-x-3 items-end">
           {loadingProducts ? (
-            <p>Cargando...</p>
+            <p className="h-[66px]">Cargando productos...</p>
           ) : (
-            <select
-              {...register("productId", {
-                required: "Se requiere el producto",
-              })}
-              value={selectedProduct ?? products[0]?.id}
-              onChange={(e) =>
-                handleChangeProduct(
-                  +e.target.value,
-                  products.find((product) => product.id === +e.target.value)
-                )
-              }
-              className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
-            >
-              {products.map((product) => (
-                <option key={product.id} value={+product.id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
+            <>
+              <div className="flex flex-col">
+                <label className="text-md">Producto:</label>
+                <select
+                  {...register("productId", {
+                    required: "Se requiere el producto",
+                  })}
+                  value={selectedProduct ?? products[0]?.id}
+                  onChange={(e) =>
+                    handleChangeProduct(
+                      +e.target.value,
+                      products.find((product) => product.id === +e.target.value)
+                    )
+                  }
+                  className="min-w-[150px] min-h-[42px] rounded-md border p-2 text-gray-500 focus:border-2 focus:outline-none border-gray-300 focus:border-blue-500"
+                >
+                  {products.map((product) => (
+                    <option key={product.id} value={+product.id}>
+                      {product.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-md">Cantidad:</label>
+                <input
+                  type="number"
+                  placeholder="Cantidad"
+                  {...register("amount", {
+                    required: "Se requiere la cantidad",
+                    min: {
+                      value: 1,
+                      message: "La cantidad no puede ser menor a 1",
+                    },
+                    validate: (value) =>
+                      Number.isInteger(Number(value)) ||
+                      "La cantidad debe ser un número entero",
+                  })}
+                  className="rounded-md border p-2 text-gray-500 focus:border-2 focus:outline-none border-gray-300 focus:border-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-md">Costo por unidad:</label>
+                <input
+                  type="number"
+                  step={0.01}
+                  placeholder="Costo por unidad"
+                  {...register("cost", {
+                    required: "Se requiere el costo",
+                    min: {
+                      value: 1,
+                      message: "El costo no puede ser menor a 1",
+                    },
+                  })}
+                  className="rounded-md border p-2 text-gray-500 focus:border-2 focus:outline-none border-gray-300 focus:border-blue-500"
+                />
+              </div>
+
+              <button
+                className="rounded-md px-3 py-2 bg-[#4675c1] hover:bg-[#7ba5e0] text-white text-lg h-fit transition duration-300 ease-in-out"
+                type="submit"
+                disabled={loadingCreatePurchase}
+              >
+                Registrar
+              </button>
+            </>
           )}
-
-          <input
-            type="number"
-            placeholder="Cantidad"
-            {...register("amount", {
-              required: "Se requiere la cantidad",
-              min: {
-                value: 1,
-                message: "La cantidad no puede ser menor a 1",
-              },
-              validate: (value) =>
-                Number.isInteger(Number(value)) ||
-                "La cantidad debe ser un número entero",
-            })}
-            className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
-          />
-
-          <input
-            type="number"
-            step={0.01}
-            placeholder="Costo por unidad"
-            {...register("cost", {
-              required: "Se requiere el costo",
-              min: {
-                value: 1,
-                message: "El costo no puede ser menor a 1",
-              },
-            })}
-            className="rounded-md border border-gray-300 p-2 text-gray-500 focus:border-blue-500 focus:border-2 focus:outline-none"
-          />
-
-          <button
-            className="rounded-md px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-900 text-lg"
-            type="submit"
-            disabled={loadingCreatePurchase}
-          >
-            Registrar
-          </button>
         </form>
       </section>
+
+      <hr className="border-gray-300 border-dashed" />
 
       <section className="flex gap-x-5 items-center">
         <label className="text-sm text-gray-700">
